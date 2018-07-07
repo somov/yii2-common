@@ -1,0 +1,24 @@
+{
+    "name": "somov/yii2-common",
+    "description": "Yii2 common and utils",
+    "type": "yii2-extension",
+    "keywords": [
+        "yii2",
+        "common"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Somov",
+            "email": "somov.nn@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": ">=2.0.14"
+    },
+    "autoload": {
+        "psr-4": {
+            "somov\\common\\": "src"
+        }
+    }
+}
