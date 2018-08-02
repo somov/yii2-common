@@ -23,7 +23,6 @@ class ProcessRunner extends Component
     private $_resource;
 
 
-
     public function __destruct()
     {
         $this->freeResource();
@@ -66,8 +65,7 @@ class ProcessRunner extends Component
         $cmd = $process->compileCommand();
 
         if (empty($cmd)) {
-            $process->addError('\'Empty command request\'');
-            throw new ProcessException($process);
+            throw new ProcessException($process, 'Empty command request');
         }
 
         $this->_resource = proc_open($cmd, [
@@ -91,7 +89,7 @@ class ProcessRunner extends Component
 
         if ($process->isEmptyOutput() && !$process->isDoneProperly()) {
             $this->freeResource();
-            throw new ProcessException($process);
+            throw new ProcessException($process, 'Fail execute process');
         }
 
         return $this->freeResource();
