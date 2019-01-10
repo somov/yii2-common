@@ -56,11 +56,11 @@ trait ContainerCompositions
 
 
     /**
-     * @param array $factory
+     * @param callable $factory
      * @param $class
      * @param array $config
      */
-    protected function getCompositionFromFactory(array $factory, $class, $config = [])
+    protected function getCompositionFromFactory($factory, $class, $config = [])
     {
         if (isset($this->_cHolder[$class])) {
             return $this->_cHolder[$class];
@@ -78,5 +78,30 @@ trait ContainerCompositions
 
     }
 
+
+    /**
+     * @param string|array $config
+     * @return object
+     */
+    protected function getCompositionYii($config)
+    {
+
+        if (is_array($config)) {
+            $class = ArrayHelper::getValue($config, 'class');
+        } else {
+            $class = $config;
+            $config = [
+                'class' => $config
+            ];
+        }
+
+        if (isset($this->_cHolder[$class])) {
+            return $this->_cHolder[$class];
+        }
+
+        $this->_cHolder[$class] = \Yii::createObject($config);
+        return $this->_cHolder[$class];
+
+    }
 
 }
