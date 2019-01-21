@@ -8,7 +8,10 @@
 namespace somov\common\behaviors;
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 use somov\common\interfaces\DeletedMarkerInterface;
 use somov\common\interfaces\RelatedInterface;
 use yii\base\Behavior;
@@ -138,12 +141,25 @@ class Related extends Behavior implements DeletedMarkerInterface, RelatedInterfa
                     }
                     continue;
                 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
                 //если есть отметка об удалении пропускаем
                 if (isset($obj->deleteMarked) && $obj->deleteMarked) {
                     continue;
                 }
 
+<<<<<<< HEAD
                 $obj->validate();
+=======
+                if ($obj->isNewRecord) {
+                    $obj->save();
+                } else {
+                    $obj->validate();
+                }
+
+>>>>>>> develop
                 $record->link($relationName, $obj);
             }
         } else {

@@ -26,23 +26,25 @@ trait ContainerCompositions
         if (isset($this->_cHolder[$class])) {
             return $this->_cHolder[$class];
         }
-
-        $reflection = new \ReflectionClass($class);
-        $params = $reflection->getConstructor()->getParameters();
-
         $constructorParams = [];
-        foreach ($params as $param) {
-            if ($param->getClass() !== null) {
-                if ($dependency = ArrayHelper::remove($config, $param->getClass()->name)) {
-                    $constructorParams[$param->name] = $dependency;
-                }
-            } else {
-                if ($dependency = ArrayHelper::remove($config, $param->name)) {
-                    $constructorParams[$param->name] = $dependency;
+        $reflection = new \ReflectionClass($class);
+        if ($c = $reflection->getConstructor()) {
+            $params = $c->getParameters();
+
+            foreach ($params as $param) {
+                if ($param->getClass() !== null) {
+                    if ($dependency = ArrayHelper::remove($config, $param->getClass()->name)) {
+                        $constructorParams[$param->name] = $dependency;
+                    }
                 } else {
-                    $constructorParams[$param->name] = null;
+                    if ($dependency = ArrayHelper::remove($config, $param->name)) {
+                        $constructorParams[$param->name] = $dependency;
+                    } else {
+                        $constructorParams[$param->name] = null;
+                    }
                 }
             }
+
         }
 
         if (array_key_exists('config', $constructorParams)) {

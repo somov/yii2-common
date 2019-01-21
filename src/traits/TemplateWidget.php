@@ -9,8 +9,13 @@
 namespace somov\common\traits;
 
 
+<<<<<<< HEAD
 use vjs\classes\ArrayHelper;
 use yii\base\Widget;
+=======
+use yii\base\Widget;
+use yii\helpers\ArrayHelper;
+>>>>>>> develop
 use yii\helpers\Html;
 use yii\helpers\Inflector;
 
