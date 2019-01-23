@@ -1,9 +1,5 @@
 <?php
-<<<<<<< HEAD
-// Updated in Jan 18, 2019, 11:45:31 AM
-=======
-// Updated in Jan 22, 2019, 1:53:57 PM
->>>>>>> develop
+// Updated in Jan 23, 2019, 9:50:58 AM
 return array (
   'test' => 'testing',
   'foo' => 'bar',

@@ -10,12 +10,22 @@ use somov\common\helpers\FileHelper;
 class FileHelperTest extends Codeception\TestCase\Test
 {
 
+
+    public function testCompareDirectoriesUpdatedTime()
+    {
+        list(, $updated) = FileHelper::compareDirectories('@mtest/files/compare/updated_time/src',
+            '@mtest/files/compare/updated_time/dst');
+        $this->assertSame(reset($updated), '/first.txt');
+    }
+
+
     public function getSyncIndexProvider()
     {
         return [
             '1' => [ 1],
             '2' => [ 2],
-            '3' => [ 3]
+            '3' => [ 3],
+            '4' => [ 4]
         ];
     }
 
@@ -37,14 +47,6 @@ class FileHelperTest extends Codeception\TestCase\Test
         $this->assertEmpty(array_filter($r));
 
 
-    }
-
-
-    public function testCompareDirectoriesUpdatedTime()
-    {
-        list(, $updated) = FileHelper::compareDirectories('@mtest/files/compare/updated_time/src',
-            '@mtest/files/compare/updated_time/dst');
-        $this->assertSame(reset($updated), '/first.txt');
     }
 
 
