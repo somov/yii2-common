@@ -12,6 +12,7 @@ use Exception;
 use somov\common\traits\DynamicProperties;
 use yii\base\ArrayAccessTrait;
 use yii\base\BaseObject;
+use yii\helpers\ArrayHelper;
 
 
 /**
@@ -103,7 +104,7 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     public function mergeWith(array $array)
     {
-        $this->data = array_merge($this->data, $array);
+        $this->data =  ArrayHelper::merge($this->data, $array);
         return $this;
     }
 

@@ -8,8 +8,7 @@
 namespace somov\common\helpers;
 
 
-use vjs\classes\ArrayHelper;
-use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 
 class FileHelper extends \yii\helpers\FileHelper
 {
@@ -20,6 +19,7 @@ class FileHelper extends \yii\helpers\FileHelper
      * @param array $options настройки поиска каталога источника [[FileHelper::findFiles]]
      * может быть указан атрибут delete, если false  запрещает  удалять файлы
      * @param callable $onProcess
+     * @throws \Exception
      */
     public static function synchronizeDirectories($source, $destination, $options = [], $onProcess = null)
     {

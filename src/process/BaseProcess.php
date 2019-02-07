@@ -68,7 +68,7 @@ abstract class BaseProcess extends BaseObject
      */
     public $outputParser;
 
-    /** Действие комманды - строка с идентификтором или масиив идентификатор => параметры действия
+    /** Действие команды - строка с идентификтором или массив идентификатор => параметры действия
      * @var array|string
      */
     public $action;
@@ -284,5 +284,13 @@ abstract class BaseProcess extends BaseObject
         }
         $this->_arguments[] = [$key => $value];
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getStatus()
+    {
+        return $this->_status;
     }
 }
