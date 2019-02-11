@@ -9,7 +9,6 @@ namespace somov\common\components;
 
 use somov\common\exceptions\ProcessException;
 use somov\common\process\BaseProcess;
-
 use yii\base\BaseObject;
 use yii\base\Component;
 
@@ -37,7 +36,16 @@ class ProcessRunner extends Component
     {
         /** @var BaseProcess $process */
         $process = ($process instanceof BaseObject) ? $process : \Yii::createObject($process);
-        $terminationStatus = (new static())->run($process, $data);
+
+        try {
+            $terminationStatus = (new static())->run($process, $data);
+        } catch (\Exception $exception) {
+            if ($exception instanceof ProcessException) {
+                throw $exception;
+            }
+            throw new ProcessException($process, $exception->getMessage(), $exception);
+        }
+
         return $data;
     }
 
@@ -67,6 +75,7 @@ class ProcessRunner extends Component
         if (empty($cmd)) {
             throw new ProcessException($process, 'Empty command request');
         }
+
 
         $this->_resource = proc_open($cmd, [
             0 => ['pipe', 'r'],

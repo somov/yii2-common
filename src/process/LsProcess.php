@@ -12,14 +12,14 @@ class LsProcess extends BaseProcess
 {
     use ArrayBuffered;
 
-    protected $command = 'ls';
-
     public $all = true;
 
     public $detail = true;
 
     protected function prepareCommand()
     {
+        $this->command = (DIRECTORY_SEPARATOR === '/') ? 'ls'  : 'dir';
+
         $this->addArgument($this->cwd);
 
         if ($this->all) {

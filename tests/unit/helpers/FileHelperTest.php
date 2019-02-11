@@ -15,7 +15,7 @@ class FileHelperTest extends Codeception\TestCase\Test
     {
         list(, $updated) = FileHelper::compareDirectories('@mtest/files/compare/updated_time/src',
             '@mtest/files/compare/updated_time/dst');
-        $this->assertSame(reset($updated), '/first.txt');
+        $this->assertSame(reset($updated),  DIRECTORY_SEPARATOR .'first.txt');
     }
 
 
@@ -55,21 +55,21 @@ class FileHelperTest extends Codeception\TestCase\Test
         list(, , $deleted) = FileHelper::compareDirectories(
             '@mtest/files/compare/deleted/src',
             '@mtest/files/compare/deleted/dst');
-        $this->assertSame(reset($deleted), '/first.txt');
+        $this->assertSame(reset($deleted), DIRECTORY_SEPARATOR .'first.txt');
     }
 
     public function testCompareDirectoriesUpdatedSize()
     {
         list(, $updated) = FileHelper::compareDirectories('@mtest/files/compare/updated_size/src',
             '@mtest/files/compare/updated_size/dst');
-        $this->assertSame(reset($updated), '/first.txt');
+        $this->assertSame(reset($updated),  DIRECTORY_SEPARATOR .'first.txt');
     }
 
 
     public function testCompareDirectoriesNew()
     {
         list($new) = FileHelper::compareDirectories('@mtest/files/compare/new/src', '@mtest/files/compare/new/dst');
-        $this->assertSame(reset($new), '/second.txt');
+        $this->assertSame(reset($new),  DIRECTORY_SEPARATOR .'second.txt');
     }
 
     public function testCompareDirectoriesSame()
