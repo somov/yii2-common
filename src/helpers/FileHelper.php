@@ -49,15 +49,8 @@ class FileHelper extends \yii\helpers\FileHelper
                 if (isset($onProcess) && is_callable($onProcess)) {
                     call_user_func($onProcess, 'Delete', $destination . $file);
                 }
-
             }
-
-            try {
-                $dirs = self::findDirectories($destination);
-            }  catch (\Exception $e) {
-                throw  $e;
-            }
-
+            $dirs = self::findDirectories($destination);
             do {
                 $done = true;
                 foreach ($dirs as $index => $dir) {
@@ -89,17 +82,28 @@ class FileHelper extends \yii\helpers\FileHelper
         $destination = \Yii::getAlias($destination);
 
         $sourceList = self::findFilesRelative($source, $options);
-        $destinationList = is_dir($destination) ? self::findFilesRelative($destination) : [];
+        $destinationList = is_dir($destination) ? self::findFilesRelative($destination, $options) : [];
 
         $updated = [];
+        $compareTime = ArrayHelper::getValue($options, 'compareTime', true);
+
         foreach (array_intersect($sourceList, $destinationList) as $file) {
             if (filesize($source . $file) !== filesize($destination . $file)) {
                 $updated[] = $file;
                 continue;
             }
+            if ($compareTime) {
+                $ts = new \DateTime();
+                $ts->setTimestamp(filemtime($source . $file));
+                $ts->setTime($ts->format('H'), $ts->format('i'), 0);
 
-            if (filemtime($source . $file) !== filemtime($destination . $file)) {
-                $updated[] = $file;
+                $td = new \DateTime();
+                $td->setTimestamp(filemtime($destination . $file));
+                $td->setTime($td->format('H'), $td->format('i'), 0);
+
+                if ($ts != $td) {
+                    $updated[] = $file;
+                }
             }
         }
 
