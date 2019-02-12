@@ -12,7 +12,6 @@ namespace somov\common\traits;
 use yii\base\Module;
 use yii\console\Application;
 use yii\console\Controller;
-use yii\db\Connection;
 
 trait CommandRunTrait
 {
@@ -22,17 +21,11 @@ trait CommandRunTrait
      * @param string $route
      * @param array $params
      * @param Module $module
-     * @param Connection|null $db
      * @return string
-     * @throws \Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    protected function runCommand(array $config, $route, $params = [], $module = null, $db = null)
+    protected function runCommand(array $config, $route, $params = [], $module = null)
     {
-
-        $config = array_merge($config, [
-            'db' => (isset($db)) ? $db : \Yii::$app->db
-        ]);
-
         $module = (isset($module)) ? $module : \Yii::$app;
 
         /** @var Controller $command */
