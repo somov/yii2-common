@@ -16,7 +16,8 @@ class FileHelper extends \yii\helpers\FileHelper
     /** Синхронизация файлов каталогов
      * @param string $source
      * @param string $destination
-     * @param array $options настройки поиска каталога источника [[FileHelper::findFiles]]
+     * @param array $options настройки поиска исходной папки  [[FileHelper::findFiles]].
+     * атрибут destinationOptions настройки папки назначения
      * может быть указан атрибут delete, если false  запрещает  удалять файлы
      * @param callable $onProcess
      * @throws \Exception
@@ -28,7 +29,9 @@ class FileHelper extends \yii\helpers\FileHelper
 
         $deleteFiles = ArrayHelper::remove($options, 'delete', true);
 
-        list($new, $updated, $deleted) = self::compareDirectories($source, $destination, $options);
+        list($new, $updated, $deleted) = self::compareDirectories($source, $destination, $options,
+            ArrayHelper::remove($options, 'destinationOptions', []));
+
 
         foreach (array_merge($new, $updated) as $file) {
             FileHelper::createDirectory(dirname($destination . $file));
@@ -42,7 +45,7 @@ class FileHelper extends \yii\helpers\FileHelper
             }
         }
 
-        if ($deleteFiles) {
+        if ($deleteFiles && count($deleted) > 0) {
             foreach ($deleted as $file) {
                 self::unlink($destination . $file);
 
@@ -73,19 +76,21 @@ class FileHelper extends \yii\helpers\FileHelper
      * Сравнение файлов в каталогах
      * @param string $source
      * @param string $destination
-     * @param array $options настройки поиска каталога источника [[FileHelper::findFiles]]
+     * @param array $sourceOptions настройки поиска каталога источника [[FileHelper::findFiles]]
+     * @param array $destinationOptions
      * @return array list [$new, $updated, $deleted] массива список новых, измененных, удаленных файлов
+     * @throws \Exception
      */
-    public static function compareDirectories($source, $destination, $options = [])
+    public static function compareDirectories($source, $destination, $sourceOptions = [], $destinationOptions = [])
     {
         $source = \Yii::getAlias($source);
         $destination = \Yii::getAlias($destination);
 
-        $sourceList = self::findFilesRelative($source, $options);
-        $destinationList = is_dir($destination) ? self::findFilesRelative($destination, $options) : [];
+        $sourceList = self::findFilesRelative($source, $sourceOptions);
+        $destinationList = is_dir($destination) ? self::findFilesRelative($destination, $destinationOptions) : [];
 
         $updated = [];
-        $compareTime = ArrayHelper::getValue($options, 'compareTime', true);
+        $compareTime = ArrayHelper::getValue($sourceOptions, 'compareTime', true);
 
         foreach (array_intersect($sourceList, $destinationList) as $file) {
             if (filesize($source . $file) !== filesize($destination . $file)) {
