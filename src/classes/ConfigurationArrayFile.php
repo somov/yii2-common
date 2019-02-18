@@ -17,7 +17,7 @@ use yii\helpers\ArrayHelper;
 
 /**
  * Создание и переписывание файлов конфигурации в формате  массив PHP
- * @property string fileName
+ * @property-read  string fileName
  */
 class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \IteratorAggregate
 {
@@ -69,11 +69,15 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
 
     /**
      *Запись в файл
+     * @param string|null $asFileName
      * @return $this
-     * @throws Exception
+     * @throws \yii\base\InvalidConfigException
      */
-    public function write()
+    public function write($asFileName = null)
     {
+        if (isset($asFileName)) {
+            $this->_fileName = $asFileName;
+        }
         $content = "<?php\n";
         $content .= "// Updated in " . \Yii::$app->formatter->asDatetime(time()) . "\n";
         $content .= "return ";
@@ -104,7 +108,7 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     public function mergeWith(array $array)
     {
-        $this->data =  ArrayHelper::merge($this->data, $array);
+        $this->data = ArrayHelper::merge($this->data, $array);
         return $this;
     }
 
