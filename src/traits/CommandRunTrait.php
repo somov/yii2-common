@@ -19,12 +19,12 @@ trait CommandRunTrait
     /** Запуск консольных команд  из web приложения
      * @param array $config
      * @param string $route
-     * @param array $params
+     * @param array|string $params
      * @param Module $module
      * @return string
      * @throws \yii\base\InvalidConfigException
      */
-    protected function runCommand(array $config, $route, $params = [], $module = null)
+    protected function runCommand(array $config, $route = '', $params = '', $module = null)
     {
         $module = (isset($module)) ? $module : \Yii::$app;
 
@@ -40,7 +40,7 @@ trait CommandRunTrait
         ob_implicit_flush(false);
 
         try {
-            $command->run($route, $params);
+            $command->run($route, (array) $params);
         } catch (\Exception $exception) {
             if (ob_get_level() > 0) {
                 ob_end_clean();
