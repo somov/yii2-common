@@ -8,6 +8,8 @@
 namespace somov\common\helpers;
 
 
+
+use yii\base\ErrorException as ErrorExceptionAlias;
 use yii\helpers\ArrayHelper;
 
 class FileHelper extends \yii\helpers\FileHelper
@@ -30,16 +32,25 @@ class FileHelper extends \yii\helpers\FileHelper
 
         list($new, $updated, $deleted) = self::compareDirectories($source, $destination, $options);
 
-
         foreach (array_merge($new, $updated) as $file) {
-            FileHelper::createDirectory(dirname($destination . $file));
-            copy($source . $file, $destination . $file);
-            if ($time = filemtime($source . $file)) {
-                touch($destination . $file, $time);
+            $src = $source . $file;
+            $dst = $destination . $file;
+            FileHelper::createDirectory(dirname($dst));
+            try {
+                copy($src, $dst);
+            } catch (ErrorExceptionAlias $exception) {
+                if (file_exists($dst)) {
+                    chmod($dst, ArrayHelper::getValue($options, 'mode', 0775));
+                }
+                copy($src, $dst);
+            }
+
+            if ($time = filemtime($src)) {
+                touch($dst, $time);
             }
 
             if (isset($onProcess) && is_callable($onProcess)) {
-                call_user_func($onProcess, 'Copy', $destination . $file);
+                call_user_func($onProcess, 'Copy', $dst);
             }
         }
 
