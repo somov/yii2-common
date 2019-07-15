@@ -8,7 +8,6 @@
 namespace somov\common\helpers;
 
 
-
 use yii\base\ErrorException as ErrorExceptionAlias;
 use yii\helpers\ArrayHelper;
 
@@ -40,7 +39,8 @@ class FileHelper extends \yii\helpers\FileHelper
                 copy($src, $dst);
             } catch (ErrorExceptionAlias $exception) {
                 if (file_exists($dst)) {
-                    chmod($dst, ArrayHelper::getValue($options, 'mode', 0775));
+                    //chmod($dst, ArrayHelper::getValue($options, 'mode', 0775));
+                    unlink($dst);
                 }
                 copy($src, $dst);
             }

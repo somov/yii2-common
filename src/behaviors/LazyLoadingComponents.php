@@ -54,7 +54,7 @@ class LazyLoadingComponents extends Behavior
             return false;
         }
 
-        $config = require_once $fileName;
+        $config = require $fileName;
         $this->owner->set($name, $config);
 
         return true;
