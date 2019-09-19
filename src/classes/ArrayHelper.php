@@ -108,7 +108,7 @@ class ArrayHelper extends BaseArrayHelper
 
                 if (!is_string($v)) {
                     try {
-                        $v = (string)$v;
+                        $v = trim((string) $v);
                     } catch (\Exception $exception) {
                         $v = '';
                     }

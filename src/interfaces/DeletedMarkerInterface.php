@@ -8,7 +8,7 @@
 
 namespace somov\common\interfaces;
 
-use yii\base\Component;
+use yii\db\ActiveRecord;
 
 
 /**
@@ -17,8 +17,9 @@ use yii\base\Component;
  *
  * @method deleteMarkedRelation(array $relations, callable $onMatch = null, callable $onUpdateGroup = null)
  * @method deleteMarked(array $models, callable $onMatch = null, callable $onUpdateGroup = null)
- * @method integer markDeleted(Component[] $items, array $search = null)
- * @method Component[] filterDeleted(array $items, $not = false)
+ * @method integer markDeleted(ActiveRecord[] $items, array $search = null)
+ * @method ActiveRecord[] filterDeleted(array $items, $not = false)
+ * @property bool $markedDeleted
  */
 interface DeletedMarkerInterface
 {

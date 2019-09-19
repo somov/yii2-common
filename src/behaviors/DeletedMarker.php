@@ -117,7 +117,7 @@ class DeletedMarker extends Behavior implements DeletedMarkerInterface
     {
         return array_filter($items, function ($model) use ($not) {
             /**
-             * @var ActiveRecord $model
+             * @var ActiveRecord|DeletedMarkerInterface $model
              */
             if (!$model->hasProperty('markedDeleted')) {
                 return $not;
