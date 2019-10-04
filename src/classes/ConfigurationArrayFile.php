@@ -47,6 +47,12 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     public $cacheDuration = 3600;
 
+    /**
+     * @var null|array
+     */
+    public $variables = null;
+
+
     /** Конструктор
      * ConfigurationArrayFile constructor.
      * @param string $fileName
@@ -54,11 +60,11 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     public function __construct($fileName, array $config = [])
     {
+        parent::__construct($config);
         $this->_fileName = \Yii::getAlias($fileName);
         if (ArrayHelper::remove($config, 'read', true)) {
             $this->read($this->fileName);
         }
-        parent::__construct($config);
     }
 
     /** Функция свойства имя файла
@@ -78,6 +84,9 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
         $this->data = $this->configurationFileCacheInstance()->getOrSet([self::class, $fileName],
             function () use ($fileName) {
                 if (file_exists($fileName)) {
+                    if (isset($this->variables) && is_array($this->variables)) {
+                        extract($this->variables);
+                    }
                     return include $fileName;
                 }
                 return [];

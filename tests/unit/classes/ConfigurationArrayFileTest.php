@@ -13,9 +13,14 @@ class ConfigurationArrayFileTest extends Codeception\TestCase\Test
 
     public function testRead()
     {
-        $config = new ConfigurationArrayFile('@mtest/files/testConfig.php');
+        $config = new ConfigurationArrayFile('@mtest/files/testConfig.php', [
+            'variables' =>[
+                'test' => 'test_variable'
+            ]
+        ]);
         $this->assertSame('bar', $config['foo']);
         $this->assertSame('bar', $config->foo);
+        $this->assertSame('test_variable', $config->var);
     }
 
     public function testWrite()
@@ -51,7 +56,6 @@ class ConfigurationArrayFileTest extends Codeception\TestCase\Test
                 ]
             ]
         );
-
 
     }
 }
