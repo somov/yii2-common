@@ -60,10 +60,11 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     public function __construct($fileName, array $config = [])
     {
+        $isRead = ArrayHelper::remove($config, 'read', true);
         parent::__construct($config);
         $this->_fileName = \Yii::getAlias($fileName);
-        if (ArrayHelper::remove($config, 'read', true)) {
-            $this->read($this->fileName);
+        if ($isRead) {
+            $this->read($this->_fileName );
         }
     }
 

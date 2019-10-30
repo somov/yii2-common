@@ -17,7 +17,13 @@ class LazyLoadingComponentsTest extends Codeception\TestCase\Test
         if (!$app->getBehavior('lazy')) {
             $app->attachBehavior('lazy', [
                 'class' => \somov\common\behaviors\LazyLoadingComponents::class,
-                'configDirectory' => '@mtest/files/lazyConfigs'
+                'configDirectory' => '@mtest/files/lazyConfigs',
+                'configFileOptions' => [
+                    'variables' => [
+                        'variable1' => 'test'
+                    ]
+                ]
+
             ]);
         }
         return $app;
@@ -32,6 +38,7 @@ class LazyLoadingComponentsTest extends Codeception\TestCase\Test
 
         $this->assertInstanceOf(\mtest\classes\TestComponent::class, $component);
         $this->assertSame('Hello', $component->testProperty);
+        $this->assertSame('test', $component->testVariable);
 
     }
 

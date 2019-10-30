@@ -9,7 +9,10 @@
 namespace somov\common\behaviors;
 
 
+use somov\common\classes\ArrayHelper;
+use somov\common\classes\ConfigurationArrayFile;
 use yii\base\Behavior;
+use yii\base\Module;
 
 /**
  * Отложено загружает компоненты
@@ -18,11 +21,12 @@ use yii\base\Behavior;
  *
  * Class LazyLoadingComponents
  * @package somov\common\behaviors
+ * @property array $configFileOptions
  */
 class LazyLoadingComponents extends Behavior
 {
     /**
-     * @var \yii\base\Application
+     * @var Module
      */
     public $owner;
 
@@ -30,6 +34,29 @@ class LazyLoadingComponents extends Behavior
      * @var string
      */
     public $configDirectory = '@app/configs/components';
+
+    /**
+     * @var array
+     */
+    private $_configFileOptions = [
+        'class' => ConfigurationArrayFile::class
+    ];
+
+    /**
+     * @param $options
+     */
+    public function setConfigFileOptions($options)
+    {
+        $this->_configFileOptions = ArrayHelper::merge($this->_configFileOptions, $options);
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfigFileOptions()
+    {
+        return $this->_configFileOptions;
+    }
 
     /**
      * @param string $name
@@ -54,20 +81,25 @@ class LazyLoadingComponents extends Behavior
             return false;
         }
 
-        $config = require $fileName;
-        $this->owner->set($name, $config);
+        $config = \Yii::createObject($this->_configFileOptions, [$fileName]);
+
+
+        $this->owner->set($name, $config->asArray());
 
         return true;
     }
 
     /**
-     * Перенаправляет __get на экземпляр приложения
+     * Переотравляет __get на экземпляр $owner
      * @param string $name
      * @return mixed|object|null
      * @throws \yii\base\InvalidConfigException
      */
     public function __get($name)
     {
-        return $this->owner->get($name);
+        if ($this->owner->has($name)) {
+            return $this->owner->get($name);
+        }
+        return parent::__get($name);
     }
 }
