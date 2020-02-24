@@ -31,3 +31,6 @@ tests/_support/*
 
 #vagrant folder
 /.vagrant
+
+/vendor/*
+/runtime/*

@@ -1,6 +1,6 @@
 {
   "name": "somov/yii2-common",
-  "description": "Yii2 common and utils",
+  "description": "Yii2 common utils",
   "type": "yii2-extension",
   "keywords": [
     "yii2",
@@ -17,6 +17,14 @@
     "yiisoft/yii2": ">=2.0.14",
     "runz0rd/common-php": "*"
   },
+
+  "require-dev": {
+    "codeception/base": "^2.2.3",
+    "codeception/verify": "~0.3.1",
+    "codeception/specify": "~0.4.3",
+    "phpunit/phpunit": "~5"
+  },
+
   "autoload": {
     "psr-4": {
       "somov\\common\\": "src"
@@ -29,5 +37,17 @@
       "/vendor",
       "/bin"
     ]
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ],
+  "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "enabled": false
+    }
   }
 }
