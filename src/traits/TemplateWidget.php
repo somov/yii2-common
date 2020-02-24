@@ -120,7 +120,7 @@ trait TemplateWidget
         }
 
         if (is_array($group)) {
-            $this->options[$groupName] = reset($group);
+            $this->options[$groupName] = ArrayHelper::merge(reset($group), $this->options[$groupName]);
         }
 
         if (isset($this->options[$groupName]['options'])) {
