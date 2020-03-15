@@ -9,8 +9,19 @@ namespace somov\common\helpers;
 
 use Common\ModelReflection\DocBlock;
 
+/**
+ * Class ReflectionHelper
+ * @package somov\common\helpers
+ *
+ */
 class ReflectionHelper
 {
+    /**
+     * Парсет класс, извлекает namespace и class  
+     * @param string $file
+     * @param array $info
+     * @return array
+     */
     public static function initClassInfo($file, &$info)
     {
         $info = [];
@@ -27,9 +38,16 @@ class ReflectionHelper
 
         $info['namespace'] = $m[1];
         $info['class'] = $m[1] . '\\' . $m[2];
-
+        
+        return $info;
     }
 
+    /**
+     * @param string $file
+     * @param array|null $info
+     * @return array
+     * @throws \ReflectionException
+     */
     public static function classInfo($file, array $info = null)
     {
         if (!isset($info)) {
@@ -42,7 +60,7 @@ class ReflectionHelper
         $info['methods'] = $reflection->getMethods();
         $info['annotations'] = (new DocBlock($reflection->getDocComment()))->getAnnotations();
         foreach ($info['methods'] as &$method) {
-            $method->getDocComment();
+
             $method = [
                 'name' => $method->name,
                 'annotations' => (new DocBlock($method->getDocComment()))->getAnnotations(),
