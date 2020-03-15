@@ -61,6 +61,7 @@ trait ContainerCompositions
      * @param callable $factory
      * @param $class
      * @param array $config
+     * @return mixed
      */
     protected function getCompositionFromFactory($factory, $class, $config = [])
     {
