@@ -46,17 +46,17 @@ class Property extends ReflectionData implements ClassInfoDataPropertyInterface
      */
     public function getType()
     {
-        if ($v = $this->getValue()) {
-            $type = gettype($v);
+        $type = $this->getTypeFromAnnotations('var.0');
+        if (empty($type)) {
+            if ($v = $this->getValue()) {
+                $type = gettype($v);
 
-            if ($type === 'object') {
-                $type = get_class($v);
+                if ($type === 'object') {
+                    $type = get_class($v);
+                }
+
             }
-
-        } else {
-            $type = $this->getTypeFromAnnotations('var.0');
         }
-
         return $this->getComposition(ParameterType::class, ['type' => $type]);
     }
 

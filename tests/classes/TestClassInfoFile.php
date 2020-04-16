@@ -21,4 +21,9 @@ class TestClassInfoFile
      */
     public $test1;
 
+    /**
+     * @var boolean
+     */
+    public $booleanProp = '1';
+
 }

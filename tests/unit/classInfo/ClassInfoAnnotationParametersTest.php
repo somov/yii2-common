@@ -7,6 +7,7 @@
  */
 
 use somov\common\classInfo\ClassInfo;
+use somov\common\classInfo\ClassInfoDataInterface;
 
 
 class ClassInfoAnnotationParametersTest extends PHPUnit_Framework_TestCase
@@ -20,7 +21,14 @@ class ClassInfoAnnotationParametersTest extends PHPUnit_Framework_TestCase
             'includeAnnotatedMethods' => true
         ]);
 
+        $properties = $info->getProperties(ClassInfoDataInterface::VISIBILITY_PUBLIC);
+        /** @var \somov\common\classInfo\ParameterType $type */
+        $type = $properties['booleanProp']->getType();
+
+        self::assertSame('boolean', $type->getType());
+
         $parameters = $info->getClassAnnotations('test', false, [], true);
+        
         $this->assertCount(3, $parameters);
         $this->assertInstanceOf(\somov\common\classInfo\ParameterType::class, $parameters[0]);
 

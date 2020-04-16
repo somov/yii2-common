@@ -19,6 +19,8 @@ use yii\helpers\StringHelper;
  */
 class ParameterType extends BaseObject
 {
+    const MIXED_TYPE = 'mixed';
+
     /**
      * @var string
      */
@@ -35,7 +37,7 @@ class ParameterType extends BaseObject
         }
 
         if (empty($this->_type)) {
-            $this->_type = 'mixed';
+            $this->_type = self::MIXED_TYPE;
         }
 
         parent::__construct($config);
