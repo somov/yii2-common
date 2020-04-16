@@ -7,6 +7,7 @@
 
 namespace somov\common\process;
 
+use somov\common\helpers\ArrayHelper;
 use somov\common\interfaces\ParserInterface;
 use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
@@ -276,6 +277,17 @@ abstract class BaseProcess extends BaseObject
      */
     protected function addArgument($key, $value = null)
     {
+        if (is_array($value)) {
+            if (ArrayHelper::isAssociative($value, false)) {
+                $value = implode(',',array_map(function ($key, $value){
+                    return "$key=$value";
+                }, array_keys($value), $value));
+                return $this->addArgument($key, $value);
+            } else {
+                return $this->addArgument($key, implode(',', $value));
+            }
+        }
+
         if (is_array($key)) {
             foreach ($key as $k => $v) {
                 $this->addArgument($k, $v);

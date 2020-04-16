@@ -22,7 +22,7 @@ class ProcessRunnerTest extends Test
     public function getCommands()
     {
         return [
-            'normal ls ' => [new LsProcess(['cwd' => __DIR__])],
+            'normal ls ' => [new LsProcess(['cwd' => __DIR__, 'blockSize' => '10M'])],
             'error ls' => [new LsProcess(['cwd' => 'not_exists']), ProcessException::class],
         ];
     }
