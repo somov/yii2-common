@@ -8,11 +8,14 @@
 namespace somov\common\interfaces;
 
 
+use somov\common\process\BaseProcess;
+
 interface ParserInterface
 {
     /**
      * @param mixed $data
+     * @param BaseProcess $process
      * @return $this
      */
-    public function parse($data);
+    public function parse($data, BaseProcess $process);
 }

@@ -108,7 +108,7 @@ class ArrayHelper extends BaseArrayHelper
 
                 if (!is_string($v)) {
                     try {
-                        $v = trim((string) $v);
+                        $v = trim((string)$v);
                     } catch (\Exception $exception) {
                         $v = '';
                     }
@@ -129,6 +129,24 @@ class ArrayHelper extends BaseArrayHelper
             }, $text), -1);
 
         return $value;
+    }
+
+    /**
+     * @param array $array
+     * @param null|string|array|callable $key
+     * @param null|string|array|callable $group
+     * @return array
+     */
+    public static function reIndex(array $array, $key = null, $group = null)
+    {
+        $result = [];
+        foreach ($array as $item) {
+            $result = array_merge($result, array_values($item));
+        }
+        if (isset($key)) {
+            return self::index($result, $key, $group);
+        }
+        return $result;
     }
 
 }

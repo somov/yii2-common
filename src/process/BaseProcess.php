@@ -14,6 +14,10 @@ use yii\base\InvalidConfigException;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
 
+/**
+ * Class BaseProcess
+ * @package somov\common\process
+ */
 abstract class BaseProcess extends BaseObject
 {
 
@@ -65,7 +69,7 @@ abstract class BaseProcess extends BaseObject
     private $_errors = [];
 
     /**
-     * @var string class parser output
+     * @var string|array|callable Type parser output
      */
     public $outputParser;
 
@@ -233,7 +237,7 @@ abstract class BaseProcess extends BaseObject
         /** @var ParserInterface $parser */
         $parser = ($this->outputParser instanceof ParserInterface) ? $this->outputParser : \Yii::createObject($this->outputParser);
 
-        return $parser->parse($this->getOutPutBuffer());
+        return $parser->parse($this->getOutPutBuffer(), $this);
     }
 
     /**
