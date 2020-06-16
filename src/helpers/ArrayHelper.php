@@ -149,4 +149,24 @@ class ArrayHelper extends BaseArrayHelper
         return $result;
     }
 
+    /**
+     * @param array $array
+     * @param array $names
+     * @param bool $keepKeys
+     * @return array
+     */
+    public static function getColumns(array $array, array $names, $keepKeys = false)
+    {
+
+        return array_map(function ($array) use ($names) {
+            $result = [];
+            foreach ($names as $name => $columnName) {
+                $name = is_numeric($name) ? $columnName : $name;
+
+                $result[$name] = static::getValue($array, $columnName);
+            }
+            return $result;
+        }, $keepKeys ?  $array : array_values($array));
+    }
+
 }

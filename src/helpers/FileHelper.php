@@ -11,7 +11,7 @@ namespace somov\common\helpers;
 use yii\base\ErrorException as ErrorExceptionAlias;
 use yii\helpers\ArrayHelper;
 
-class FileHelper extends \yii\helpers\FileHelper
+class FileHelper extends \yii\helpers\BaseFileHelper
 {
 
     /** Синхронизация файлов каталогов
