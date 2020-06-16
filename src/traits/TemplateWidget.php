@@ -14,6 +14,13 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Inflector;
 
+/**
+ * Trait TemplateWidget
+ * @package somov\common\traits
+ *
+ * @deprecated
+ * @see TemplatingWidgetTrait
+ */
 trait TemplateWidget
 {
 
