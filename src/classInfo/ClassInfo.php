@@ -31,6 +31,11 @@ class ClassInfo extends BaseObject
     public $includeAnnotatedMethods = false;
 
     /**
+     * @var bool
+     */
+    public $processParents  = false;
+
+    /**
      * @var string
      */
     private $_fileName;
@@ -307,8 +312,11 @@ class ClassInfo extends BaseObject
         $items = $this->getOrSetInfo($sectionName, function () use ($sectionName) {
             $sectionName = ucfirst($sectionName);
             $raw = call_user_func([$this->reflectionClass(), 'get' . $sectionName]);
-            $raw = ArrayHelper::index($raw, 'name', ['class']);
-            $raw = ArrayHelper::getValue($raw, $this->getClass(), []);
+
+            if (!$this->processParents) {
+                $raw = ArrayHelper::index($raw, 'name', ['class']);
+                $raw = ArrayHelper::getValue($raw,  rtrim($this->getClass() ,'\\'), []);
+            }
 
             $items = ArrayHelper::map($raw, 'name', function ($r) {
                 return ReflectionData::getData($this, $r);
