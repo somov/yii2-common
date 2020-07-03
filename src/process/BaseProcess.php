@@ -286,7 +286,7 @@ abstract class BaseProcess extends BaseObject
                 $value = implode(',',array_map(function ($key, $value){
                     return "$key=$value";
                 }, array_keys($value), $value));
-                return $this->addArgument($key, $value);
+                return $this->addArgument($key, '"'. $value . '"');
             } else {
                 return $this->addArgument($key, implode(',', $value));
             }

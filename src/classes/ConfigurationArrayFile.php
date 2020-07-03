@@ -38,7 +38,7 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
     private $_fileName;
 
     /**
-     * @var string|CacheInterface|array
+     * @var string|CacheInterface|array|boolean
      */
     public $cache = 'cache';
 
@@ -64,7 +64,7 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
         parent::__construct($config);
         $this->_fileName = \Yii::getAlias($fileName);
         if ($isRead) {
-            $this->read($this->_fileName );
+            $this->read($this->_fileName);
         }
     }
 
@@ -105,22 +105,37 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
      */
     private function configurationFileCacheInstance()
     {
-        /** @var CacheInterface $cache */
-        $cache = is_string($this->cache) ?
-            \Yii::$app->get($this->cache, false) :
-            $this->cache;
+        if ($this->cache !== false) {
+            /** @var CacheInterface $cache */
+            $cache = is_string($this->cache) ?
+                \Yii::$app->get($this->cache, false) :
+                $this->cache;
 
-        if (is_array($cache)) {
-            $cache = \Yii::createObject($cache);
+            if (is_array($cache)) {
+                $cache = \Yii::createObject($cache);
+            }
+
+            if (!$cache instanceof CacheInterface) {
+                $cache = new DummyCache();
+                \Yii::warning([self::class, 'Cache not configured']);
+            }
+            return $cache;
         }
+        return new DummyCache();
+    }
 
-        if (!$cache instanceof CacheInterface) {
-            $cache = new DummyCache();
-            \Yii::warning([self::class, 'Cache not configured']);
-        }
-
-        return $cache;
-
+    /**
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getContent()
+    {
+        $content = "<?php\n";
+        $content .= "// Updated at " . \Yii::$app->formatter->asDatetime(time()) . "\n";
+        $content .= "return ";
+        $content .= var_export($this->data, true);
+        $content .= ";";
+        return $content;
     }
 
     /**
@@ -134,13 +149,8 @@ class ConfigurationArrayFile extends BaseObject implements \ArrayAccess, \Iterat
         if (isset($asFileName)) {
             $this->_fileName = $asFileName;
         }
-        $content = "<?php\n";
-        $content .= "// Updated in " . \Yii::$app->formatter->asDatetime(time()) . "\n";
-        $content .= "return ";
-        $content .= var_export($this->data, true);
-        $content .= ";";
 
-        if (!file_put_contents($this->fileName, $content)) {
+        if (!file_put_contents($this->fileName, $this->getContent())) {
             throw new Exception('Cannot write config at ' . $this->fileName);
         }
 
