@@ -8,7 +8,8 @@
 
 namespace somov\common\traits;
 
-use somov\common\classes\ArrayHelper;
+
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 
 /**
