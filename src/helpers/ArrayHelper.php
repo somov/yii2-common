@@ -11,6 +11,10 @@ namespace somov\common\helpers;
 use yii\helpers\BaseArrayHelper;
 use yii\helpers\StringHelper;
 
+/**
+ * Class ArrayHelper
+ * @package somov\common\helpers
+ */
 class ArrayHelper extends BaseArrayHelper
 {
 
@@ -166,7 +170,27 @@ class ArrayHelper extends BaseArrayHelper
                 $result[$name] = static::getValue($array, $columnName);
             }
             return $result;
-        }, $keepKeys ?  $array : array_values($array));
+        }, $keepKeys ? $array : array_values($array));
+    }
+
+
+    /**
+     * @param array $array
+     * @param bool $keepZeroValues
+     */
+    public static function unsetNotEmptyRecursive(array &$array, $keepZeroValues = true)
+    {
+        foreach ($array as $key => &$item) {
+            if (is_array($item)) {
+                static::unsetNotEmptyRecursive($item);
+            }
+            if (empty($item)) {
+                if ($keepZeroValues && $item == '0') {
+                    continue;
+                }
+                unset($array[$key]);
+            }
+        }
     }
 
 }
