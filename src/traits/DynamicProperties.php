@@ -7,23 +7,52 @@
 
 namespace somov\common\traits;
 
+use yii\base\BaseObject;
+
 /**
  * Trait DynamicProperties
  * @package somov\common\traits
  * динамические свойства объекта из массива $this->data
+ * и если есть значение по умолканию из метода properties
+ *
+ * @method array properties
  */
 trait DynamicProperties
 {
+
+    /**
+     * @return array
+     */
+    private function dynamicProperties()
+    {
+        $dataName = $this->dynamicDataPropertyName();
+        if (method_exists($this, 'properties')) {
+            return $this->{$dataName} + $this->properties();
+        }
+        return $this->{$dataName};
+    }
+
+    /**
+     * @return string
+     */
+    protected function dynamicDataPropertyName()
+    {
+        return 'data';
+    }
+
+
     /**
      * {@inheritdoc}
      */
     public function __get($name)
     {
-        if (array_key_exists($name, $this->data)) {
-            return $this->data[$name];
+        $data = $this->dynamicProperties();
+        if (array_key_exists($name, $data)) {
+            return $data[$name];
+        } else if ($this instanceof BaseObject) {
+            return parent::__get($name);
         }
-
-        return parent::__get($name);
+        return null;
     }
 
     /**
@@ -31,23 +60,32 @@ trait DynamicProperties
      */
     public function __set($name, $value)
     {
-        if (array_key_exists($name, $this->data)) {
-            $this->data[$name] = $value;
-        } else {
+        $dataName = $this->dynamicDataPropertyName();
+        if (array_key_exists($name, $this->dynamicProperties())) {
+            $this->{$dataName}[$name] = $value;
+            return;
+        } else if ($this instanceof BaseObject) {
             parent::__set($name, $value);
+            return;
         }
+        $this->{$name} = $value;
     }
+
 
     /**
      * {@inheritdoc}
      */
     public function __isset($name)
     {
-        if (array_key_exists($name, $this->data)) {
-            return isset($this->data[$name]);
+        $data = $this->dynamicProperties();
+        if (isset($data[$name])) {
+            return true;
         }
 
-        return parent::__isset($name);
+        if ($this instanceof BaseObject) {
+            return parent::__isset($name);
+        }
+        return false;
     }
 
     /**
@@ -55,10 +93,14 @@ trait DynamicProperties
      */
     public function __unset($name)
     {
-        if (array_key_exists($name, $this->data)) {
-            unset($this->data[$name]);
-        } else {
+        $dataName = $this->dynamicDataPropertyName();
+        if (array_key_exists($name, $this->dynamicProperties())) {
+            $this->{$dataName}[$name] = null;
+        }
+
+        if ($this instanceof BaseObject) {
             parent::__unset($name);
         }
+
     }
 }
