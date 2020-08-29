@@ -29,8 +29,8 @@ trait TemplatingWidgetTrait
     private static $_cacheTemplate;
 
 
-    /** генерирует секции по шаблону
-     * @param string $template
+    /**
+     * @param string|array $template
      * @return string
      */
     protected function renderTemplate($template = null)
@@ -42,22 +42,32 @@ trait TemplatingWidgetTrait
             return '';
         }
 
-        $key = crc32($template . get_class($this));
+        $meta = is_array($template) ? $template : $this->templateMeta($template);
 
-        $meta = null;
-        if (isset(self::$_cacheTemplate[$key])) {
-            $meta = self::$_cacheTemplate[$key];
-        } else {
-            if ($meta = $this->compileTemplate($template)) {
-                self::$_cacheTemplate[$key] = $meta;
-            };
-        }
         if (is_array($meta) && !empty($meta)) {
             return $this->fillContentTemplate($meta)->resolveContentTemplate($template, $meta);
         }
 
         return '';
     }
+
+    /**
+     * @param $template
+     * @return array|null
+     */
+    protected function templateMeta($template)
+    {
+        $key = crc32($template . get_class($this));
+        if (isset(self::$_cacheTemplate[$key])) {
+            return self::$_cacheTemplate[$key];
+        }
+        if ($meta = $this->compileTemplate($template)) {
+            self::$_cacheTemplate[$key] = $meta;
+            return $meta;
+        };
+        return null;
+    }
+
 
     /**
      * @param array $meta
@@ -77,13 +87,17 @@ trait TemplatingWidgetTrait
     }
 
     /**
-     * @param string $template
+     * @param string|array $template
      * @param array $meta
      * @return mixed
      */
     private function resolveContentTemplate($template, array $meta)
     {
         $content = $template;
+
+        if (is_array($template)){
+            $content = implode('',ArrayHelper::getColumn($template, 'templatePart'));
+        }
 
         foreach ($meta as $item) {
             $content = str_replace($item['templatePart'], $item['content'], $content);
@@ -98,7 +112,7 @@ trait TemplatingWidgetTrait
      * @param callable|string $data
      * @param string $insert
      * @param string|boolean $methodPrefix
-     * @return string
+     * @return string|false
      * @throws \yii\base\InvalidConfigException
      */
     protected function getContentSection($name, $data = null, $insert = '', $methodPrefix = 'render')
@@ -110,18 +124,17 @@ trait TemplatingWidgetTrait
             return false;
         }
 
-        $options = ArrayHelper::remove($this->csOptions, $name, []);
+        $options = ArrayHelper::remove($this->getContentOptions(), $name, []);
 
         if ($methodPrefix) {
             $method = $methodPrefix . ucfirst($name);
             if (($this instanceof Component) ? $this->hasMethod($method) : method_exists($this, $method)) {
-                $data = call_user_func([$this, $method]);
+                $data = call_user_func_array([$this, $method], [&$insert, &$data]);
             }
         }
 
-
         if (is_callable($data)) {
-            $data = call_user_func_array($data, [$this]);
+            $data = call_user_func_array($data, [$this, &$insert, &$data]);
         }
 
         if (is_array($data)) {
@@ -193,10 +206,11 @@ trait TemplatingWidgetTrait
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getContentOptions()
+    public function &getContentOptions()
     {
-        return $this->csOptions;
+        $o = isset($this->csOptions) ? $this->csOptions : [];
+        return $o;
     }
 }
