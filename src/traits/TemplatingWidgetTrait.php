@@ -76,7 +76,7 @@ trait TemplatingWidgetTrait
     private function fillContentTemplate(array &$meta)
     {
         foreach ($meta as $name => &$item) {
-            if (isset($item['children'])) {
+            if (isset($item['children']) && is_array($item['children'])) {
                 $this->fillContentTemplate($item['children']);
                 $item['content'] = $this->getContentSection($name, null, $this->resolveContentTemplate($item['sub'], $item['children']));
             } else {
@@ -95,8 +95,8 @@ trait TemplatingWidgetTrait
     {
         $content = $template;
 
-        if (is_array($template)){
-            $content = implode('',ArrayHelper::getColumn($template, 'templatePart'));
+        if (is_array($template)) {
+            $content = implode('', ArrayHelper::getColumn($template, 'templatePart'));
         }
 
         foreach ($meta as $item) {
@@ -183,7 +183,7 @@ trait TemplatingWidgetTrait
                 $offsetTotal += $offset;
                 $item = compact('templatePart', 'offsetTotal', 'offset');
                 $templatePart = preg_replace('/}$/', '', ltrim($templatePart, '{'));
-                preg_match('/^([A-z]+)(.*)$/', $templatePart, $match);
+                preg_match('/^([A-z|0-9]+)(.*)$/', $templatePart, $match);
                 $item['name'] = ArrayHelper::getValue($match, 1);
                 if ($sub = ArrayHelper::getValue($match, 2, false)) {
                     $item['children'] = $this->compileTemplate($templatePart, $offsetTotal);
@@ -210,7 +210,9 @@ trait TemplatingWidgetTrait
      */
     public function &getContentOptions()
     {
-        $o = isset($this->csOptions) ? $this->csOptions : [];
-        return $o;
+        if (isset($this->csOptions)) {
+            return $this->csOptions;
+        }
+        return [];
     }
 }
