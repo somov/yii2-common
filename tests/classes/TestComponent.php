@@ -6,6 +6,10 @@ namespace mtest\classes;
 /**
  * Class TestComponent
  * @package mtest\classes
+ *
+ * @testSub test222
+ *
+ * @property string testSubProperty 
  */
 class TestComponent extends \yii\base\Component
 {

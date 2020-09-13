@@ -11,7 +11,20 @@ use somov\common\classInfo\ClassInfo;
 
 class ClassInfoBaseTest extends PHPUnit_Framework_TestCase
 {
-   
+
+
+    public function testInfoWithParents()
+    {
+
+
+        $info = new ClassInfo('mtest\classes\TestClassInfo');
+        $parentLevel = 2;
+        $test1 =  $info->getClassAnnotations('testSub', true, null, false, $parentLevel);
+
+        self::assertSame('test222', $test1);
+
+    }
+
     public function testInfo()
     {
         $test = new \mtest\classes\TestClassInfo();
@@ -70,5 +83,7 @@ class ClassInfoBaseTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($info->isMethodExists('testPrivateMethod'));
 
     }
+
+
 
 }

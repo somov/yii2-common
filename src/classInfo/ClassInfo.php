@@ -33,7 +33,7 @@ class ClassInfo extends BaseObject
     /**
      * @var bool
      */
-    public $processParents  = false;
+    public $processParents = false;
 
     /**
      * @var string
@@ -156,12 +156,25 @@ class ClassInfo extends BaseObject
      * @param bool $first
      * @param mixed $default
      * @param bool $asType
+     * @param int $maxParentLevel
      * @return bool|array|string|ParameterType|ParameterType[]
      */
-    public function getClassAnnotations($name, $first = false, $default = null, $asType = false)
+    public function getClassAnnotations($name, $first = false, $default = null, $asType = false, &$maxParentLevel = 0)
     {
-        return $this->getAnnotationsFromDocBlock($this->getAnnotationsClassDocBlock(),
-            $name, $first, $default, $asType);
+        if ($block = $this->getAnnotationsClassDocBlock()) {
+            $value = $this->getAnnotationsFromDocBlock($block,
+                $name, $default, $first, $asType);
+
+            if (empty($value) && $maxParentLevel > 0) {
+                --$maxParentLevel;
+                $value = (new static($this->reflectionClass()->getParentClass()->name))
+                    ->getClassAnnotations($name, $first, $default, $asType, $maxParentLevel);
+            }
+
+            return $value;
+        }
+
+        return $default;
     }
 
     /**
@@ -315,7 +328,7 @@ class ClassInfo extends BaseObject
 
             if (!$this->processParents) {
                 $raw = ArrayHelper::index($raw, 'name', ['class']);
-                $raw = ArrayHelper::getValue($raw,  rtrim($this->getClass() ,'\\'), []);
+                $raw = ArrayHelper::getValue($raw, rtrim($this->getClass(), '\\'), []);
             }
 
             $items = ArrayHelper::map($raw, 'name', function ($r) {
@@ -379,7 +392,7 @@ class ClassInfo extends BaseObject
             return [];
         }
 
-        $section = $this->getClass() . '.'. $section;
+        $section = $this->getClass() . '.' . $section;
 
         if ($info = ArrayHelper::getValue(self::$_info, $section, false)) {
             return $info;
@@ -434,14 +447,14 @@ class ClassInfo extends BaseObject
         }
 
         if ($asType) {
-                return $this->getOrSetInfo('types.' . md5(serialize([(array) $value, $name])), function () use ($value) {
-                    if (is_array($value)) {
-                        return array_map(function ($v) {
-                            return new ParameterType(['type' => $v]);
-                        }, $value);
-                    }
-                    return new ParameterType(['type' => $value]);
-                });
+            return $this->getOrSetInfo('types.' . md5(serialize([(array)$value, $name])), function () use ($value) {
+                if (is_array($value)) {
+                    return array_map(function ($v) {
+                        return new ParameterType(['type' => $v]);
+                    }, $value);
+                }
+                return new ParameterType(['type' => $value]);
+            });
         }
 
         return $value;
