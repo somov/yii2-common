@@ -213,6 +213,7 @@ trait TemplatingWidgetTrait
         if (isset($this->csOptions)) {
             return $this->csOptions;
         }
-        return [];
+        $options = [];
+        return $options;
     }
 }
