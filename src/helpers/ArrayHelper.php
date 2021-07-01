@@ -193,4 +193,33 @@ class ArrayHelper extends BaseArrayHelper
         }
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
+    public static function mix(array $data)
+    {
+        $result = [];
+        $n = count($data);
+        $f = 1;
+        for ($i = 1; $i <= $n; $i++) $f = $f * $i;
+        $first = null;
+        for ($i = 0; $i < $f; $i++) {
+            $pos = $i % ($n - 1);
+            if ($pos == 0) {
+                $first = array_shift($data);
+            }
+            $result[$i] = [];
+            for ($j = 0; $j < $n - 1; $j++) {
+                if ($j == $pos) $result[$i][] = $first;
+                $result[$i][] = $data[$j];
+            }
+            if ($pos == ($n - 2)) {
+                $data[] = $first;
+            }
+        }
+
+        return $result;
+    }
+
 }
