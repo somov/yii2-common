@@ -195,14 +195,22 @@ class ArrayHelper extends BaseArrayHelper
 
     /**
      * @param array $data
+     * @param int $length
      * @return array
      */
-    public static function mix(array $data)
+    public static function mix(array $data, $length = null)
     {
         $result = [];
-        $n = count($data);
+        $n = isset($length) ? $length : count($data);
+
         $f = 1;
+
         for ($i = 1; $i <= $n; $i++) $f = $f * $i;
+
+        if ($f === 1) {
+            return [$data];
+        }
+
         $first = null;
         for ($i = 0; $i < $f; $i++) {
             $pos = $i % ($n - 1);
@@ -211,7 +219,9 @@ class ArrayHelper extends BaseArrayHelper
             }
             $result[$i] = [];
             for ($j = 0; $j < $n - 1; $j++) {
-                if ($j == $pos) $result[$i][] = $first;
+                if ($j == $pos) {
+                    $result[$i][] = $first;
+                }
                 $result[$i][] = $data[$j];
             }
             if ($pos == ($n - 2)) {
@@ -220,6 +230,37 @@ class ArrayHelper extends BaseArrayHelper
         }
 
         return $result;
+    }
+
+    /**
+     * @param $array
+     * @param $length
+     * @return array
+     */
+    public static function combination($array, $length = null)
+    {
+        $r = array();
+        $n = count($array);
+        $length = isset($length) ? $length : $n;
+
+        if ($length <= 0 || $length > $n) {
+            return $r;
+        }
+
+        for ($i = 0; $i < $n; $i++) {
+            $t = array($array[$i]);
+            if ($length == 1) {
+                $r[] = $t;
+            } else {
+                $b = array_slice($array, $i + 1);
+                $c = static::combination($b, $length - 1);
+                foreach ($c as $v) {
+                    $r[] = array_merge($t, $v);
+                }
+            }
+        }
+
+        return $r;
     }
 
 }
