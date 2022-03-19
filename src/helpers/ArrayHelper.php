@@ -89,9 +89,17 @@ class ArrayHelper extends BaseArrayHelper
      * @param int $count
      * @param bool $isStripTags
      * @return string|string[]|null
+     * @throws \Exception
      */
     public static function compileText($text, $params, &$count = 0, $isStripTags = true)
     {
+        $valueGetterDefault = function ($key, $params) {
+            return self::getValue($params, $key, '');
+        };
+
+        if (empty($params['valueGetter']) || false === is_callable($params['valueGetter'])) {
+            $params['valueGetter'] = $valueGetterDefault;
+        }
 
         $text = preg_replace_callback('/\{(.*?)\}/m', function ($m)
         use ($text, $params, $isStripTags) {
@@ -101,14 +109,25 @@ class ArrayHelper extends BaseArrayHelper
 
         $value = preg_replace('/\s+/m', ' ', preg_replace_callback(
             '/\[\s*(\s*[\w.]+)(\s*\,\s*(\s*[\w]+\s*)(|(?:\,\s*)([\d]+)\s*)\s*|)\]/m',
-            function ($m) use ($params, $isStripTags, &$count) {
+            function ($m) use ($params, $isStripTags, &$count, $valueGetterDefault) {
                 $key[] = $m[1];
 
                 if (isset($key[3])) {
                     $key[] = $key[3];
                 }
 
-                $v = self::getValue($params, $key, '');
+                if (is_array($key)) {
+                    $key = reset($key);
+                }
+
+                $details = [];
+
+                if ($params['valueGetter'] !== $valueGetterDefault && preg_match('/(.+)\.(\w+)$/', $key, $m)) {
+                    $details['model'] = ArrayHelper::getValue($params, $m[1]);
+                    $details['attribute'] = $m[2];
+                }
+
+                $v = call_user_func($params['valueGetter'], $key, $params, $details);
 
                 if (!is_string($v)) {
                     try {
